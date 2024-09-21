@@ -10,22 +10,55 @@ class Register_Window:
         self.root.title("Login")
         self.root.geometry("1550x800+0+0")
 
-        self.bg=ImageTk.PhotoImage(file=r"D:\Python\BT_Lab\BTL\Image\bg.png")
-
-        lbl_bg=Label(self.root,image=self.bg)
-        lbl_bg.place(x=0,y=0,relwidth=1,relheight=1)
+        # Background Image
+        self.bg_img = Image.open(r"D:\Python\BT_Lab\BTL\BTL_Python\images\bgregister.jpg")
+        self.bg_img = self.bg_img.resize((self.root.winfo_screenwidth(), self.root.winfo_screenheight()), Image.LANCZOS)
+        self.bg = ImageTk.PhotoImage(self.bg_img)
+        lbl_bg = Label(self.root, image=self.bg)
+        lbl_bg.place(x=0, y=0, relwidth=1, relheight=1)
  
+        # Frame for register
         frame=Frame(self.root,bg="black")
         frame.place(x=610,y=170,width=340,height=500)
 
-        img1 = Image.open(r"D:\Python\BT_Lab\BTL\Image\bg.png")
-        img1 = img1.resize((100, 100), Image.Resampling.LANCZOS)
+        # Register image
+        img1 = Image.open(r"D:\Python\BT_Lab\BTL\BTL_Python\images\iconuser.png")
+        img1 = img1.resize((100, 100), Image.LANCZOS)
         self.photoimage1 = ImageTk.PhotoImage(img1)
-        lblimg1 = Label(image=self.photoimage1, bg="black", borderwidth=0)
+        lblimg1 = Label(self.root, image=self.photoimage1, bg="black", borderwidth=0)
         lblimg1.place(x=730, y=175, width=100, height=100)
 
         get_str=Label(frame,text="Get Started",font=("times new roman",20,"bold"),fg="white",bg="black")
         get_str.place(x=90,y=100)
+
+        #==========icon===============
+        #icon user
+        img2 = Image.open(r"D:\Python\BT_Lab\BTL\BTL_Python\images\iconuser.png")
+        img2 = img2.resize((25, 25), Image.Resampling.LANCZOS)
+        self.photoimage2 = ImageTk.PhotoImage(img2)
+        lblimg2 = Label(image=self.photoimage2, bg="black", borderwidth=0)
+        lblimg2.place(x=645, y=323, width=25, height=25)
+        
+        #icon pass
+        img3 = Image.open(r"D:\Python\BT_Lab\BTL\BTL_Python\images\iconpass.png")
+        img3 = img3.resize((25, 25), Image.Resampling.LANCZOS)
+        self.photoimage3 = ImageTk.PhotoImage(img3)
+        lblimg3 = Label(image=self.photoimage3, bg="black", borderwidth=0)
+        lblimg3.place(x=645, y=393, width=25, height=25)
+        
+        #icon confirm pass
+        img4 = Image.open(r"D:\Python\BT_Lab\BTL\BTL_Python\images\iconpass.png")
+        img4 = img4.resize((25, 25), Image.Resampling.LANCZOS)
+        self.photoimage4 = ImageTk.PhotoImage(img4)
+        lblimg4 = Label(image=self.photoimage4, bg="black", borderwidth=0)
+        lblimg4.place(x=645, y=463, width=25, height=25)
+
+        #icon confirm pass
+        img5 = Image.open(r"D:\Python\BT_Lab\BTL\BTL_Python\images\type.png")
+        img5 = img5.resize((25, 25), Image.Resampling.LANCZOS)
+        self.photoimage5 = ImageTk.PhotoImage(img5)
+        lblimg5 = Label(image=self.photoimage5, bg="black", borderwidth=0)
+        lblimg5.place(x=645, y=533, width=25, height=25)
 
         #username
         new_user=Label(frame,text="Usename",font=("times new roman",15,"bold"),fg="white",bg="black")
@@ -61,20 +94,27 @@ class Register_Window:
         if self.newuser.get() == "" or self.newpass.get() == "":
             messagebox.showerror("Error", "All fields are required")
         elif self.newpass.get() != self.Confirmp.get():
-            messagebox.showerror("Error","Confirm password is incorrect")
+            messagebox.showerror("Error", "Confirm password is incorrect")
         else:
             try:
-                conn = mysql.connector.connect(host='localhost',user='root',password='',database='hotelmanagement')
+                conn = mysql.connector.connect(host='localhost', user='root', password='', database='hotelmanagement')
                 my_cursor = conn.cursor()
                 
-                my_cursor.execute("SELECT * FROM account WHERE Username=%s",(self.newuser.get(),))
+                my_cursor.execute("SELECT * FROM account WHERE Username=%s", (self.newuser.get(),))
                 result = my_cursor.fetchone()
                 if result:
                     messagebox.showerror("Error", "Username already exists")
                 else:
-                    my_cursor.execute("INSERT INTO account (Username, Password, Type) VALUES (%s, %s, %s)",(self.newuser.get(), self.newpass.get(), self.combo_type.get()))
+                    my_cursor.execute("INSERT INTO account (Username, Password, Type) VALUES (%s, %s, %s)",
+                                      (self.newuser.get(), self.newpass.get(), self.combo_type.get()))
                     conn.commit()
                     messagebox.showinfo("Success", "Registration Successful")
+
+                    self.root.destroy()
+                    root = Tk()
+                    from login import Login_Window
+                    Login_Window(root)
+                    root.mainloop()
 
             except Exception as ex:
                 messagebox.showerror("Error", f"Error due to {str(ex)}")

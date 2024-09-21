@@ -13,7 +13,10 @@ class Login_Window:
         self.root.geometry("1550x800+0+0")
 
         # Background Image
-        self.bg = ImageTk.PhotoImage(file=r"D:\Python\BT_Lab\BTL\Image\bglogin.jpg")
+        self.bg_img = Image.open(r"D:\Python\BT_Lab\BTL\BTL_Python\images\bglogin.jpg")
+        self.bg_img = self.bg_img.resize((self.root.winfo_screenwidth(), self.root.winfo_screenheight()), Image.LANCZOS)
+
+        self.bg = ImageTk.PhotoImage(self.bg_img)
         lbl_bg = Label(self.root, image=self.bg)
         lbl_bg.place(x=0, y=0, relwidth=1, relheight=1)
 
@@ -22,14 +25,28 @@ class Login_Window:
         frame.place(x=610, y=170, width=340, height=450)
 
         # Login image
-        img1 = Image.open(r"D:\Python\BT_Lab\BTL\Image\bg.png")
-        img1 = img1.resize((100, 100), Image.Resampling.LANCZOS)
+        img1 = Image.open(r"D:\Python\BT_Lab\BTL\BTL_Python\images\iconuser.png")
+        img1 = img1.resize((100, 100), Image.LANCZOS)
         self.photoimage1 = ImageTk.PhotoImage(img1)
-        lblimg1 = Label(image=self.photoimage1, bg="black", borderwidth=0)
+        lblimg1 = Label(self.root, image=self.photoimage1, bg="black", borderwidth=0)
         lblimg1.place(x=730, y=175, width=100, height=100)
 
         get_str = Label(frame, text="Get Started", font=("times new roman", 20, "bold"), fg="white", bg="black")
         get_str.place(x=90, y=100)
+
+        #==============icon==================
+        #icon image
+        img2 = Image.open(r"D:\Python\BT_Lab\BTL\BTL_Python\images\iconuser.png")
+        img2 = img2.resize((25, 25), Image.Resampling.LANCZOS)
+        self.photoimage2 = ImageTk.PhotoImage(img2)
+        lblimg2 = Label(image=self.photoimage2, bg="black", borderwidth=0)
+        lblimg2.place(x=645, y=323, width=25, height=25)
+
+        img3 = Image.open(r"D:\Python\BT_Lab\BTL\BTL_Python\images\iconpass.png")
+        img3 = img3.resize((25, 25), Image.Resampling.LANCZOS)
+        self.photoimage3 = ImageTk.PhotoImage(img3)
+        lblimg3 = Label(image=self.photoimage3, bg="black", borderwidth=0)
+        lblimg3.place(x=645, y=393, width=25, height=25)
 
         # Username label and entry
         username = Label(frame, text="Username", font=("times new roman", 15, "bold"), fg="white", bg="black")
@@ -68,9 +85,11 @@ class Login_Window:
 
                 if result:
                     messagebox.showinfo("Success", "Login Successful!")
+
+                    user_type = result[2]
                     self.root.destroy()
                     root = Tk()
-                    HotelManagementSystem(root)
+                    HotelManagementSystem(root, user_type)
                     root.mainloop()
                 else:
                     messagebox.showerror("Error", "Invalid Username or Password")
@@ -79,12 +98,11 @@ class Login_Window:
                 messagebox.showerror("Error", f"Error due to {str(ex)}")
 
     def register(self):
-        self.open_window(Register_Window)
+        self.root.destroy()
+        root = Tk()
+        Register_Window(root)
+        root.mainloop()
 
-    def open_window(self, window_class):
-        if not hasattr(self, 'new_window') or not self.new_window.winfo_exists():
-            self.new_window = Toplevel(self.root)
-            self.app = window_class(self.new_window)
 
 if __name__ == "__main__":
     root = Tk()

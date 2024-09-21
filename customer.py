@@ -6,8 +6,9 @@ from tkinter import messagebox
 
 
 class Cust_Win:
-    def __init__(self,root):
+    def __init__(self, root, user_type):
         self.root = root
+        self.user_type = user_type
         self.root.title("Hotel Management System")
         self.root.geometry("1295x550+230+220")
 
@@ -246,43 +247,49 @@ class Cust_Win:
         self.var_cust_address.set(row[10])
 
     def update(self):
-        if self.var_cust_mobile.get()=="":
-            messagebox.showerror("Error","Please enter mobile number",parent=self.root)
+        if self.user_type == "Admin":
+            if self.var_cust_mobile.get()=="":
+                messagebox.showerror("Error","Please enter mobile number",parent=self.root)
+            else:
+                conn = mysql.connector.connect(host='localhost',user='root',password='',database='hotelmanagement')
+                my_cursor=conn.cursor()
+                my_cursor.execute("update customer set FirstName=%s,LastName=%s,Gender=%s,Birthday=%s,Mobile=%s,Email=%s,Nationality=%s,Idproof=%s,Idnumber=%s,Address=%s where Ref=%s",(
+                                                                                                                                                                                self.var_first_name.get(),
+                                                                                                                                                                                self.var_last_name.get(),
+                                                                                                                                                                                self.var_cust_gender.get(),
+                                                                                                                                                                                self.var_cust_Birthday.get(),
+                                                                                                                                                                                self.var_cust_mobile.get(),
+                                                                                                                                                                                self.var_cust_email.get(),
+                                                                                                                                                                                self.var_cust_nationality.get(),
+                                                                                                                                                                                self.var_cust_idproof.get(),
+                                                                                                                                                                                self.var_cust_idnumber.get(),
+                                                                                                                                                                                self.var_cust_address.get(),
+                                                                                                                                                                                self.var_cust_ref.get()
+                                                                                                                                                                            ))
+                conn.commit()
+                self.fetch_data()
+                conn.close()
+                messagebox.showinfo("Update","Customer details has been updated successfully",parent=self.root)
         else:
-            conn = mysql.connector.connect(host='localhost',user='root',password='',database='hotelmanagement')
-            my_cursor=conn.cursor()
-            my_cursor.execute("update customer set FirstName=%s,LastName=%s,Gender=%s,Birthday=%s,Mobile=%s,Email=%s,Nationality=%s,Idproof=%s,Idnumber=%s,Address=%s where Ref=%s",(
-                                                                                                                                                                            self.var_first_name.get(),
-                                                                                                                                                                            self.var_last_name.get(),
-                                                                                                                                                                            self.var_cust_gender.get(),
-                                                                                                                                                                            self.var_cust_Birthday.get(),
-                                                                                                                                                                            self.var_cust_mobile.get(),
-                                                                                                                                                                            self.var_cust_email.get(),
-                                                                                                                                                                            self.var_cust_nationality.get(),
-                                                                                                                                                                            self.var_cust_idproof.get(),
-                                                                                                                                                                            self.var_cust_idnumber.get(),
-                                                                                                                                                                            self.var_cust_address.get(),
-                                                                                                                                                                            self.var_cust_ref.get()
-                                                                                                                                                                           ))
+            messagebox.showerror("Permission Denied", "You do not have permission to delete customers.", parent=self.root)
+
+    def delete(self):
+        if self.user_type == "Admin":
+            delete=messagebox.askyesno("Hotel Management System","Do you want delete this customer",parent=self.root)
+            if delete>0:
+                conn = mysql.connector.connect(host='localhost',user='root',password='',database='hotelmanagement')
+                my_cursor=conn.cursor()
+                query="delete from customer where Ref=%s"
+                value=(self.var_cust_ref.get(),)
+                my_cursor.execute(query,value)
+            else:
+                if not delete:
+                    return
             conn.commit()
             self.fetch_data()
             conn.close()
-            messagebox.showinfo("Update","Customer details has been updated successfully",parent=self.root)
-
-    def delete(self):
-        delete=messagebox.askyesno("Hotel Management System","Do you want delete this customer",parent=self.root)
-        if delete>0:
-            conn = mysql.connector.connect(host='localhost',user='root',password='',database='hotelmanagement')
-            my_cursor=conn.cursor()
-            query="delete from customer where Ref=%s"
-            value=(self.var_cust_ref.get(),)
-            my_cursor.execute(query,value)
         else:
-            if not delete:
-                return
-        conn.commit()
-        self.fetch_data()
-        conn.close()
+            messagebox.showerror("Permission Denied", "You do not have permission to delete customers.", parent=self.root)
 
     def reset(self):
         self.var_first_name.set(""),

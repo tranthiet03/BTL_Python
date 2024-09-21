@@ -6,13 +6,14 @@ import mysql.connector      #pip install mysql-connector-python
 from tkinter import messagebox
 
 class DetailsRoom:
-    def __init__(self,root):
+    def __init__(self, root, user_type):
         self.root = root
+        self.user_type = user_type
         self.root.title("Hotel Management System")
         self.root.geometry("1295x550+230+220")
 
         #Title
-        lbl_title = Label(self.root, text="ROOMBOOKING DETAILS", font=("arial",18,"bold"),bg="black",fg="gold",bd=4,relief=RIDGE)
+        lbl_title = Label(self.root, text="ADDING NEW ROOM", font=("arial",18,"bold"),bg="black",fg="gold",bd=4,relief=RIDGE)
         lbl_title.place(x=0,y=0,width=1295,height=50)
 
         #labelframe
@@ -39,9 +40,11 @@ class DetailsRoom:
         self.var_roomType=StringVar()
         lbl_roomType=Label(labelframeleft,text="Room Type:",font=("arial",12,"bold"),padx=2,pady=6)
         lbl_roomType.grid(row=2,column=0,sticky=W,padx=20)
-        
-        entry_RoomType=ttk.Entry(labelframeleft,textvariable=self.var_roomType,width=20,font=("arial",13,"bold"))
-        entry_RoomType.grid(row=2,column=1,sticky=W)
+
+        combo_roomtype=ttk.Combobox(labelframeleft,textvariable=self.var_roomType,font=("arial",12,"bold"),width=20,state="readonly")
+        combo_roomtype["value"]=("Single","Double","Luxury")
+        combo_roomtype.current(0)
+        combo_roomtype.grid(row=2,column=1,sticky=W)
 
         # ==========Button================
         btn_frame=Frame(labelframeleft,bd=2,relief=RIDGE)

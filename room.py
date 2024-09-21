@@ -6,8 +6,9 @@ import mysql.connector      #pip install mysql-connector-python
 from tkinter import messagebox
 
 class Roombooking:
-    def __init__(self,root):
+    def __init__(self, root, user_type):
         self.root = root
+        self.user_type = user_type
         self.root.title("Hotel Management System")
         self.root.geometry("1295x550+230+220")
 
@@ -57,11 +58,11 @@ class Roombooking:
         #room type
         label_Roomtype=Label(labelframeleft,text="Room Type:",font=("arial",12,"bold"),padx=2,pady=6)
         label_Roomtype.grid(row=3,column=0,sticky=W)
-        combo_gender=ttk.Combobox(labelframeleft,textvariable=self.var_roomtype,font=("arial",12,"bold"),width=27,state="readonly")
-        combo_gender["value"]=("Single","Double","Luxury")
-        combo_gender.current(0)
-        combo_gender.grid(row=3,column=1)
-        combo_gender.bind("<<ComboboxSelected>>", self.update_room_numbers)
+        combo_roomtype=ttk.Combobox(labelframeleft,textvariable=self.var_roomtype,font=("arial",12,"bold"),width=27,state="readonly")
+        combo_roomtype["value"]=("Single","Double","Luxury")
+        combo_roomtype.current(0)
+        combo_roomtype.grid(row=3,column=1)
+        combo_roomtype.bind("<<ComboboxSelected>>", self.update_room_numbers)
 
         #Room
         lblRoom=Label(labelframeleft,font=("arial",12,"bold"),text="Room:",padx=2,pady=6)
@@ -199,7 +200,7 @@ class Roombooking:
         else:
             conn = mysql.connector.connect(host='localhost',user='root',password='',database='hotelmanagement')
             my_cursor=conn.cursor()
-            my_cursor.execute("select Name from customer where Mobile=%s",(self.var_contact.get(),))
+            my_cursor.execute("select FirstName from customer where Mobile=%s",(self.var_contact.get(),))
             row=my_cursor.fetchone()
 
             if row==None:
@@ -310,39 +311,45 @@ class Roombooking:
         self.var_noofdays.set(row[6])
         
     def update(self):
-        if self.var_contact.get()=="":
-            messagebox.showerror("Error","Please enter mobile number",parent=self.root)
+        if self.user_type == "Admin":
+            if self.var_contact.get()=="":
+                messagebox.showerror("Error","Please enter mobile number",parent=self.root)
+            else:
+                conn = mysql.connector.connect(host='localhost',user='root',password='',database='hotelmanagement')
+                my_cursor=conn.cursor()
+                my_cursor.execute("update room set Checkin=%s,Checkout=%s,Roomtype=%s,Room=%s,Meal=%s,Noofdays=%s where Contact=%s",(                                                                                                                                    
+                                                                                                                                    self.var_checkin.get(),
+                                                                                                                                    self.var_checkout.get(),
+                                                                                                                                    self.var_roomtype.get(),
+                                                                                                                                    self.var_room.get(),
+                                                                                                                                    self.var_meal.get(),
+                                                                                                                                    self.var_noofdays.get(),
+                                                                                                                                    self.var_contact.get()
+                                                                                                                                        ))
+                conn.commit()
+                self.fetch_data()
+                conn.close()
+                messagebox.showinfo("Update","Room details has been updated successfully",parent=self.root)
         else:
-            conn = mysql.connector.connect(host='localhost',user='root',password='',database='hotelmanagement')
-            my_cursor=conn.cursor()
-            my_cursor.execute("update room set Checkin=%s,Checkout=%s,Roomtype=%s,Room=%s,Meal=%s,Noofdays=%s where Contact=%s",(                                                                                                                                    
-                                                                                                                                self.var_checkin.get(),
-                                                                                                                                self.var_checkout.get(),
-                                                                                                                                self.var_roomtype.get(),
-                                                                                                                                self.var_room.get(),
-                                                                                                                                self.var_meal.get(),
-                                                                                                                                self.var_noofdays.get(),
-                                                                                                                                self.var_contact.get()
-                                                                                                                                    ))
-            conn.commit()
-            self.fetch_data()
-            conn.close()
-            messagebox.showinfo("Update","Room details has been updated successfully",parent=self.root)
+            messagebox.showerror("Permission Denied", "You do not have permission to delete customers.", parent=self.root)
 
     def delete(self):
-        delete = messagebox.askyesno("Hotel Management System", "Do you want to delete this booking?")
-        if delete > 0:
-            conn = mysql.connector.connect(host="localhost", username="root", password="password", database="hotel")
-            my_cursor = conn.cursor()
-            query = "delete from room where contact=%s"
-            value = (self.var_contact.get(),)
-            my_cursor.execute(query, value)
+        if self.user_type == "Admin":
+            delete=messagebox.askyesno("Hotel Management System","Do you want delete this room",parent=self.root)
+            if delete>0:
+                conn = mysql.connector.connect(host='localhost',user='root',password='',database='hotelmanagement')
+                my_cursor=conn.cursor()
+                query="delete from room where Contact=%s"
+                value=(self.var_contact.get(),)
+                my_cursor.execute(query,value)
+            else:
+                if not delete:
+                    return
             conn.commit()
             self.fetch_data()
             conn.close()
         else:
-            if not delete:
-                return
+            messagebox.showerror("Permission Denied", "You do not have permission to delete customers.", parent=self.root)
 
     def reset(self):
         self.var_contact.set("")
@@ -365,7 +372,7 @@ class Roombooking:
         self.var_noofdays.set(abs(outDate-inDate).days)
 
         if self.var_meal.get() == "Breakfast":
-            mealPrice = 100
+            mealPrice = 200
         elif self.var_meal.get() == "Lunch":
             mealPrice = 400
         else:
@@ -379,14 +386,23 @@ class Roombooking:
             roomPrice = 1500
         num_days = float(self.var_noofdays.get())
         subTotal = (mealPrice + roomPrice) * num_days
+
+        conn = mysql.connector.connect(host='localhost', user='root', password='', database='hotelmanagement')
+        my_cursor = conn.cursor()
+        my_cursor.execute("SELECT Mobile FROM customer where Mobile=%s",(self.var_contact.get(),))
+        rows = my_cursor.fetchone()
+        if rows:
+            discount = subTotal*0.1
+            subTotal -= discount
+
         paidTax = subTotal * 0.1
         totalCost = subTotal + paidTax
 
+        #check member
         self.var_paidtax.set(f"VND {paidTax}")
         self.var_actualtotal.set(f"VND {subTotal}")
         self.var_total.set(f"VND {totalCost}")
         
-
     #search
     def search(self):
         conn = mysql.connector.connect(host='localhost',user='root',password='',database='hotelmanagement')

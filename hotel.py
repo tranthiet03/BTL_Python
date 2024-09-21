@@ -3,21 +3,23 @@ from PIL import Image, ImageTk, ImageOps  # pip install pillow
 from customer import Cust_Win
 from room import Roombooking
 from detail import DetailsRoom
+from tkinter import messagebox
 
 class HotelManagementSystem:
-    def __init__(self, root):
+    def __init__(self, root, user_type):
         self.root = root
+        self.user_type = user_type
         self.root.title("Hotel Management System")
         self.root.geometry("1550x800+0+0")
 
         # Mở ảnh logo và thay đổi kích thước
-        logo_img = Image.open("G:\\Study\\Python Assignment\\BTL_Python\\images\\logo.jpg")
+        logo_img = Image.open("D:\Python\BT_Lab\BTL\BTL_Python\images\\logo.jpg")
         logo_img = logo_img.resize((230, 140), Image.LANCZOS)  # Resize ảnh logo
 
         self.photo_logo = ImageTk.PhotoImage(logo_img)
 
        # Mở ảnh chính và thay đổi kích thước cho phù hợp với phần còn lại
-        img1 = Image.open("G:\\Study\\Python Assignment\\BTL_Python\\images\\banner.jpg")
+        img1 = Image.open("D:\Python\BT_Lab\BTL\BTL_Python\images\\banner.jpg")
         img1 = img1.resize((1320, 140), Image.LANCZOS)  # Resize ảnh với kích thước còn lại (1550 - 230)
 
         self.photoimg1 = ImageTk.PhotoImage(img1)
@@ -60,15 +62,15 @@ class HotelManagementSystem:
         logout_btn.grid(row=3, column=0, pady=1)
 
         # Thêm 3 ảnh dưới nút Logout
-        img2 = Image.open("G:\\Study\\Python Assignment\\BTL_Python\\images\\image1.jpg")
+        img2 = Image.open("D:\Python\BT_Lab\BTL\BTL_Python\images\\image1.jpg")
         img2 = img2.resize((230, 120), Image.LANCZOS)
         self.photoimg2 = ImageTk.PhotoImage(img2)
 
-        img3 = Image.open("G:\\Study\\Python Assignment\\BTL_Python\\images\\image2.jpg")
+        img3 = Image.open("D:\Python\BT_Lab\BTL\BTL_Python\images\\image2.jpg")
         img3 = img3.resize((230, 120), Image.LANCZOS)
         self.photoimg3 = ImageTk.PhotoImage(img3)
 
-        img4 = Image.open("G:\\Study\\Python Assignment\\BTL_Python\\images\\image3.jpg")
+        img4 = Image.open("D:\Python\BT_Lab\BTL\BTL_Python\images\\image3.jpg")
         img4 = img4.resize((230, 120), Image.LANCZOS)
         self.photoimg4 = ImageTk.PhotoImage(img4)
 
@@ -83,19 +85,28 @@ class HotelManagementSystem:
         lbl_img4.place(x=0, y=440, width=230, height=120)
 
     def cust_details(self):
-        self.new_window = Toplevel(self.root)
-        self.app = Cust_Win(self.new_window)
+        self.open_window(Cust_Win)
 
     def roombooking(self):
-        self.new_window = Toplevel(self.root)
-        self.app = Roombooking(self.new_window)
+        self.open_window(Roombooking)
 
     def detail_room(self):
-        self.new_window = Toplevel(self.root)
-        self.app = DetailsRoom(self.new_window)
+        if self.user_type == "Admin":
+            self.open_window(DetailsRoom)
+        else:
+            messagebox.showwarning("Access Denied", "You do not have permission to access this feature.")
+
 
     def logout(self):
-        self.root.destroy()
+        answer = messagebox.askyesno("Logout", "Are you sure you want to logout?")
+        if answer:
+            self.root.destroy()
+    
+    def open_window(self, window_class):
+        # Avoid opening multiple windows
+        if not hasattr(self, 'new_window') or not self.new_window.winfo_exists():
+            self.new_window = Toplevel(self.root)
+            self.app = window_class(self.new_window, self.user_type)
 
 if __name__ == "__main__":
     root = Tk()
