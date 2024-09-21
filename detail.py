@@ -8,7 +8,7 @@ from tkinter import messagebox
 class DetailsRoom:
     def __init__(self,root):
         self.root = root
-        self.root.title("Hospital Management System")
+        self.root.title("Hotel Management System")
         self.root.geometry("1295x550+230+220")
 
         #Title
