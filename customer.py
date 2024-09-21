@@ -16,8 +16,8 @@ class Cust_Win:
         x=random.randint(1000,9999)
         self.var_cust_ref.set(str(x))
 
-        self.var_cust_name=StringVar()
-        self.var_cust_mother=StringVar()
+        self.var_cust_firstname=StringVar()
+        self.var_cust_lastname=StringVar()
         self.var_cust_gender=StringVar()
         self.var_cust_postcode=StringVar()
         self.var_cust_mobile=StringVar()
@@ -46,15 +46,15 @@ class Cust_Win:
         entry_ref.grid(row=0,column=1)
     
         #customer name
-        cname=Label(labelframeleft,text="Customer Name:",font=("arial",12,"bold"),padx=2,pady=6)
+        cname=Label(labelframeleft,text="First Name:",font=("arial",12,"bold"),padx=2,pady=6)
         cname.grid(row=1,column=0,sticky=W)
-        txtcname=ttk.Entry(labelframeleft,width=29,textvariable=self.var_cust_name,font=("arial",13,"bold"))
+        txtcname=ttk.Entry(labelframeleft,width=29,textvariable=self.var_cust_firstname,font=("arial",13,"bold"))
         txtcname.grid(row=1,column=1)
 
         #mother name
-        lblmname=Label(labelframeleft,text="Mother Name:",font=("arial",12,"bold"),padx=2,pady=6)
+        lblmname=Label(labelframeleft,text="Last Name:",font=("arial",12,"bold"),padx=2,pady=6)
         lblmname.grid(row=2,column=0,sticky=W)
-        entry_ref=ttk.Entry(labelframeleft,width=29,textvariable=self.var_cust_mother,font=("arial",13,"bold"))
+        entry_ref=ttk.Entry(labelframeleft,width=29,textvariable=self.var_cust_lastname,font=("arial",13,"bold"))
         entry_ref.grid(row=2,column=1)
 
         #gender combobox
@@ -159,7 +159,7 @@ class Cust_Win:
         scroll_x=ttk.Scrollbar(details_table,orient=HORIZONTAL)
         scroll_y=ttk.Scrollbar(details_table,orient=VERTICAL)
 
-        self.Cust_Details_Table=ttk.Treeview(details_table,columns=("ref","name","mother","gender","post","mobile","email","nationality","idproof","idnumber","address"),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
+        self.Cust_Details_Table=ttk.Treeview(details_table,columns=("ref","firstname","lastname","gender","post","mobile","email","nationality","idproof","idnumber","address"),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
 
         scroll_x.pack(side=BOTTOM,fill=X)
         scroll_y.pack(side=RIGHT,fill=Y)
@@ -168,8 +168,8 @@ class Cust_Win:
         scroll_y.config(command=self.Cust_Details_Table.yview)
 
         self.Cust_Details_Table.heading("ref",text="Refer No")
-        self.Cust_Details_Table.heading("name",text="Name")
-        self.Cust_Details_Table.heading("mother",text="Mother Name")
+        self.Cust_Details_Table.heading("firstname",text="FirstName")
+        self.Cust_Details_Table.heading("lastname",text="LastName")
         self.Cust_Details_Table.heading("gender",text="Gender")
         self.Cust_Details_Table.heading("post",text="PostCode")
         self.Cust_Details_Table.heading("mobile",text="Mobile")
@@ -182,8 +182,8 @@ class Cust_Win:
         self.Cust_Details_Table["show"]="headings"
 
         self.Cust_Details_Table.column("ref",width=100)
-        self.Cust_Details_Table.column("name",width=100)
-        self.Cust_Details_Table.column("mother",width=100)
+        self.Cust_Details_Table.column("firstname",width=100)
+        self.Cust_Details_Table.column("lastname",width=100)
         self.Cust_Details_Table.column("gender",width=100)
         self.Cust_Details_Table.column("post",width=100)
         self.Cust_Details_Table.column("mobile",width=100)
@@ -198,15 +198,15 @@ class Cust_Win:
         self.fetch_data()
 
     def add_data(self):
-        if self.var_cust_mobile.get()=="" or self.var_cust_mother.get()=="":
+        if self.var_cust_mobile.get()=="" or self.var_cust_lastname.get()=="":
             messagebox.showerror("Error","All fields are requaired",parent=self.root)
         else:
             try:
                 conn = mysql.connector.connect(host='localhost',user='root',password='',database='hotelmanagement')
                 my_cursor=conn.cursor()
                 my_cursor.execute("insert into customer values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",(self.var_cust_ref.get(),
-                                                                                                self.var_cust_name.get(),
-                                                                                                self.var_cust_mother.get(),
+                                                                                                self.var_cust_firstname.get(),
+                                                                                                self.var_cust_lastname.get(),
                                                                                                 self.var_cust_gender.get(),
                                                                                                 self.var_cust_postcode.get(),
                                                                                                 self.var_cust_mobile.get(),
@@ -241,8 +241,8 @@ class Cust_Win:
         row=content["values"]
 
         self.var_cust_ref.set(row[0]),
-        self.var_cust_name.set(row[1]),
-        self.var_cust_mother.set(row[2]),
+        self.var_cust_firstname.set(row[1]),
+        self.var_cust_lastname.set(row[2]),
         self.var_cust_gender.set(row[3]),
         self.var_cust_postcode.set(row[4]),
         self.var_cust_mobile.set(row[5]),
@@ -259,8 +259,8 @@ class Cust_Win:
             conn = mysql.connector.connect(host='localhost',user='root',password='',database='hotelmanagement')
             my_cursor=conn.cursor()
             my_cursor.execute("update customer set Name=%s,Mother=%s,Gender=%s,PostCode=%s,Mobile=%s,Email=%s,Nationality=%s,Idproof=%s,Idnumber=%s,Address=%s where Ref=%s",(
-                                                                                                                                                                            self.var_cust_name.get(),
-                                                                                                                                                                            self.var_cust_mother.get(),
+                                                                                                                                                                            self.var_cust_firstname.get(),
+                                                                                                                                                                            self.var_cust_lastname.get(),
                                                                                                                                                                             self.var_cust_gender.get(),
                                                                                                                                                                             self.var_cust_postcode.get(),
                                                                                                                                                                             self.var_cust_mobile.get(),
@@ -293,8 +293,8 @@ class Cust_Win:
 
     def reset(self):
         # self.var_cust_ref.set(""),
-        self.var_cust_name.set(""),
-        self.var_cust_mother.set(""),
+        self.var_cust_firstname.set(""),
+        self.var_cust_lastname.set(""),
         # self.var_cust_gender.set(""),
         self.var_cust_postcode.set(""),
         self.var_cust_mobile.set(""),
