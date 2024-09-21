@@ -19,6 +19,7 @@ class Roombooking:
         self.var_room=StringVar()
         self.var_meal=StringVar()
         self.var_noofdays=StringVar()
+
         self.var_paidtax=StringVar()
         self.var_actualtotal=StringVar()
         self.var_total=StringVar()
@@ -60,21 +61,21 @@ class Roombooking:
         combo_gender["value"]=("Single","Double","Luxury")
         combo_gender.current(0)
         combo_gender.grid(row=3,column=1)
-        
         combo_gender.bind("<<ComboboxSelected>>", self.update_room_numbers)
 
         #Room
         lblRoom=Label(labelframeleft,font=("arial",12,"bold"),text="Room:",padx=2,pady=6)
         lblRoom.grid(row=4,column=0,sticky=W)
-
         self.combo_room=ttk.Combobox(labelframeleft,textvariable=self.var_room,font=("arial",12,"bold"),width=27,state="readonly")
         self.combo_room.grid(row=4,column=1)
 
         #Meal
         lblMeal=Label(labelframeleft,font=("arial",12,"bold"),text="Meal:",padx=2,pady=6)
         lblMeal.grid(row=5,column=0,sticky=W)
-        txtMeal=ttk.Entry(labelframeleft,textvariable=self.var_meal,font=("arial",13,"bold"),width=29)
-        txtMeal.grid(row=5,column=1)
+        combo_meal=ttk.Combobox(labelframeleft,textvariable=self.var_meal,font=("arial",12,"bold"),width=27,state="readonly")
+        combo_meal["value"]=("Breakfast","Lunch","Dinner")
+        combo_meal.current(0)
+        combo_meal.grid(row=5,column=1)
 
         #No of Days
         lblNoOfDays=Label(labelframeleft,font=("arial",12,"bold"),text="No Of Days:",padx=2,pady=6)
@@ -182,22 +183,14 @@ class Roombooking:
 
     def update_room_numbers(self, event=""):
         room_type = self.var_roomtype.get()
-        
-        # Kết nối với cơ sở dữ liệu
         conn = mysql.connector.connect(host='localhost',user='root',password='',database='hotelmanagement')
         my_cursor = conn.cursor()
-        
-        # Truy vấn RoomNo dựa trên RoomType
         query = "SELECT RoomNo FROM detail WHERE RoomType = %s"
         my_cursor.execute(query, (room_type,))
         rows = my_cursor.fetchall()
-        
-        # Cập nhật giá trị cho combo_room
         self.combo_room["value"] = [row[0] for row in rows]
         if rows:
-            self.combo_room.current(0)  # Chọn giá trị đầu tiên nếu có kết quả
-        
-        # Đóng kết nối
+            self.combo_room.current(0)
         conn.close()
 
     def ShowInfo_contact(self):
@@ -206,9 +199,6 @@ class Roombooking:
         else:
             conn = mysql.connector.connect(host='localhost',user='root',password='',database='hotelmanagement')
             my_cursor=conn.cursor()
-            # query=("select Name from customer where Mobile=%s")
-            # value=(self.var_contact.get(),)
-            # my_cursor.execute(query,value)
             my_cursor.execute("select Name from customer where Mobile=%s",(self.var_contact.get(),))
             row=my_cursor.fetchone()
 
@@ -219,11 +209,13 @@ class Roombooking:
                 conn.close()
                 showDataFrame=Frame(self.root,bd=4,relief=RIDGE,padx=2)
                 showDataFrame.place(x=455,y=55,width=300,height=180)
+
                 # name
                 lblName=Label(showDataFrame,text="Name:",font=("arial",12,"bold"))
                 lblName.place(x=0,y=0)
                 lbl=Label(showDataFrame,text=row,font=("arial",12,"bold"))
                 lbl.place(x=90,y=0)
+
                 # gender
                 conn = mysql.connector.connect(host='localhost',user='root',password='',database='hotelmanagement')
                 my_cursor=conn.cursor() 
@@ -323,14 +315,14 @@ class Roombooking:
         else:
             conn = mysql.connector.connect(host='localhost',user='root',password='',database='hotelmanagement')
             my_cursor=conn.cursor()
-            my_cursor.execute("update room set Contact=%s,Checkin=%s,Checkout=%s,Roomtype=%s,Room=%s,Meal=%s,Noofdays=%s",(
-                                                                                                                                    self.var_contact.get(),
-                                                                                                                                    self.var_checkin.get(),
-                                                                                                                                    self.var_checkout.get(),
-                                                                                                                                    self.var_roomtype.get(),
-                                                                                                                                    self.var_room.get(),
-                                                                                                                                    self.var_meal.get(),
-                                                                                                                                    self.var_noofdays.get()
+            my_cursor.execute("update room set Checkin=%s,Checkout=%s,Roomtype=%s,Room=%s,Meal=%s,Noofdays=%s where Contact=%s",(                                                                                                                                    
+                                                                                                                                self.var_checkin.get(),
+                                                                                                                                self.var_checkout.get(),
+                                                                                                                                self.var_roomtype.get(),
+                                                                                                                                self.var_room.get(),
+                                                                                                                                self.var_meal.get(),
+                                                                                                                                self.var_noofdays.get(),
+                                                                                                                                self.var_contact.get()
                                                                                                                                     ))
             conn.commit()
             self.fetch_data()
@@ -338,27 +330,31 @@ class Roombooking:
             messagebox.showinfo("Update","Room details has been updated successfully",parent=self.root)
 
     def delete(self):
-        delete=messagebox.askyesno("Hotel Management System","Do you want delete this room",parent=self.root)
-        if delete>0:
-            conn = mysql.connector.connect(host='localhost',user='root',password='',database='hotelmanagement')
-            my_cursor=conn.cursor()
-            query="delete from room where Contact=%s"
-            value=(self.var_contact.get(),)
-            my_cursor.execute(query,value)
+        delete = messagebox.askyesno("Hotel Management System", "Do you want to delete this booking?")
+        if delete > 0:
+            conn = mysql.connector.connect(host="localhost", username="root", password="password", database="hotel")
+            my_cursor = conn.cursor()
+            query = "delete from room where contact=%s"
+            value = (self.var_contact.get(),)
+            my_cursor.execute(query, value)
+            conn.commit()
+            self.fetch_data()
+            conn.close()
         else:
             if not delete:
                 return
-        conn.commit()
-        self.fetch_data()
-        conn.close()
 
     def reset(self):
-        self.var_contact.set(""),
-        self.var_checkin.set(""),
-        self.var_checkout.set(""),
-        self.var_room.set(""),
-        self.var_meal.set(""),
+        self.var_contact.set("")
+        self.var_checkin.set("")
+        self.var_checkout.set("")
+        self.var_roomtype.set("")
+        self.var_room.set("")
+        self.var_meal.set("")
         self.var_noofdays.set("")
+        self.var_paidtax.set("")
+        self.var_actualtotal.set("")
+        self.var_total.set("")
 
     #total day and price
     def total(self):
@@ -367,6 +363,29 @@ class Roombooking:
         inDate=datetime.strptime(inDate,"%d/%m/%Y")
         outDate=datetime.strptime(outDate,"%d/%m/%Y")
         self.var_noofdays.set(abs(outDate-inDate).days)
+
+        if self.var_meal.get() == "Breakfast":
+            mealPrice = 100
+        elif self.var_meal.get() == "Lunch":
+            mealPrice = 400
+        else:
+            mealPrice = 300
+
+        if self.var_roomtype.get() == "Single":
+            roomPrice = 700
+        elif self.var_roomtype.get() == "Double":
+            roomPrice = 1000
+        else:
+            roomPrice = 1500
+        num_days = float(self.var_noofdays.get())
+        subTotal = (mealPrice + roomPrice) * num_days
+        paidTax = subTotal * 0.1
+        totalCost = subTotal + paidTax
+
+        self.var_paidtax.set(f"VND {paidTax}")
+        self.var_actualtotal.set(f"VND {subTotal}")
+        self.var_total.set(f"VND {totalCost}")
+        
 
     #search
     def search(self):

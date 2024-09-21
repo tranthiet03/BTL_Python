@@ -16,10 +16,10 @@ class Cust_Win:
         x=random.randint(1000,9999)
         self.var_cust_ref.set(str(x))
 
-        self.var_cust_firstname=StringVar()
-        self.var_cust_lastname=StringVar()
+        self.var_first_name=StringVar()
+        self.var_last_name=StringVar()
         self.var_cust_gender=StringVar()
-        self.var_cust_postcode=StringVar()
+        self.var_cust_Birthday=StringVar()
         self.var_cust_mobile=StringVar()
         self.var_cust_email=StringVar()
         self.var_cust_nationality=StringVar()
@@ -27,14 +27,9 @@ class Cust_Win:
         self.var_cust_idnumber=StringVar()
         self.var_cust_address=StringVar()
 
-
-
-
-
         #Title
         lbl_title = Label(self.root, text="ADD CUSTOMER DETAILS", font=("arial",18,"bold"),bg="black",fg="gold",bd=4,relief=RIDGE)
         lbl_title.place(x=0,y=0,width=1295,height=50)
-
 
         labelframeleft=LabelFrame(self.root,bd=2,relief=RIDGE,text="Customer Details",font=("arial",12,"bold"),padx=2,)
         labelframeleft.place(x=5,y=50,width=425,height=490)
@@ -46,16 +41,16 @@ class Cust_Win:
         entry_ref.grid(row=0,column=1)
     
         #customer name
-        cname=Label(labelframeleft,text="First Name:",font=("arial",12,"bold"),padx=2,pady=6)
-        cname.grid(row=1,column=0,sticky=W)
-        txtcname=ttk.Entry(labelframeleft,width=29,textvariable=self.var_cust_firstname,font=("arial",13,"bold"))
-        txtcname.grid(row=1,column=1)
+        lblfname=Label(labelframeleft,text="First Name:",font=("arial",12,"bold"),padx=2,pady=6)
+        lblfname.grid(row=1,column=0,sticky=W)
+        txtlblfname=ttk.Entry(labelframeleft,width=29,textvariable=self.var_first_name,font=("arial",13,"bold"))
+        txtlblfname.grid(row=1,column=1)
 
         #mother name
-        lblmname=Label(labelframeleft,text="Last Name:",font=("arial",12,"bold"),padx=2,pady=6)
-        lblmname.grid(row=2,column=0,sticky=W)
-        entry_ref=ttk.Entry(labelframeleft,width=29,textvariable=self.var_cust_lastname,font=("arial",13,"bold"))
-        entry_ref.grid(row=2,column=1)
+        lbllname=Label(labelframeleft,text="Last Name:",font=("arial",12,"bold"),padx=2,pady=6)
+        lbllname.grid(row=2,column=0,sticky=W)
+        txtlbllname=ttk.Entry(labelframeleft,width=29,textvariable=self.var_last_name,font=("arial",13,"bold"))
+        txtlbllname.grid(row=2,column=1)
 
         #gender combobox
         label_gender=Label(labelframeleft,text="Gender:",font=("arial",12,"bold"),padx=2,pady=6)
@@ -65,11 +60,11 @@ class Cust_Win:
         combo_gender.current(0)
         combo_gender.grid(row=3,column=1)
 
-        #postcode
-        lblPostCode=Label(labelframeleft,font=("arial",12,"bold"),text="PostCode:",padx=2,pady=6)
-        lblPostCode.grid(row=4,column=0,sticky=W)
-        txtPostCode=ttk.Entry(labelframeleft,textvariable=self.var_cust_postcode,font=("arial",13,"bold"),width=29)
-        txtPostCode.grid(row=4,column=1)
+        #birthday
+        lblBirthday=Label(labelframeleft,font=("arial",12,"bold"),text="Birthday:",padx=2,pady=6)
+        lblBirthday.grid(row=4,column=0,sticky=W)
+        txtBirthday=ttk.Entry(labelframeleft,textvariable=self.var_cust_Birthday,font=("arial",13,"bold"),width=29)
+        txtBirthday.grid(row=4,column=1)
 
         #mobile
         lblMobile=Label(labelframeleft,font=("arial",12,"bold"),text="Mobile:",padx=2,pady=6)
@@ -86,7 +81,6 @@ class Cust_Win:
         #nationality
         lblNationality=Label(labelframeleft,font=("arial",12,"bold"),text="Nationality:",padx=2,pady=6)
         lblNationality.grid(row=7,column=0,sticky=W)
-
         combo_Nationality=ttk.Combobox(labelframeleft,textvariable=self.var_cust_nationality,font=("arial",12,"bold"),width=27,state="readonly")
         combo_Nationality["value"]=("VietNam","France","Japan")
         combo_Nationality.current(0)
@@ -95,9 +89,8 @@ class Cust_Win:
         #idproof type combobox
         lblIdProof=Label(labelframeleft,font=("arial",12,"bold"),text="Id Proof Type:",padx=2,pady=6)
         lblIdProof.grid(row=8,column=0,sticky=W)
-
         combo_id=ttk.Combobox(labelframeleft,textvariable=self.var_cust_idproof,font=("arial",12,"bold"),width=27,state="readonly")
-        combo_id["value"]=("Card","DrivingLicence","Passport")
+        combo_id["value"]=("National ID Card","Driver's License")
         combo_id.current(0)
         combo_id.grid(row=8,column=1)
 
@@ -159,7 +152,7 @@ class Cust_Win:
         scroll_x=ttk.Scrollbar(details_table,orient=HORIZONTAL)
         scroll_y=ttk.Scrollbar(details_table,orient=VERTICAL)
 
-        self.Cust_Details_Table=ttk.Treeview(details_table,columns=("ref","firstname","lastname","gender","post","mobile","email","nationality","idproof","idnumber","address"),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
+        self.Cust_Details_Table=ttk.Treeview(details_table,columns=("ref","fname","lname","gender","birthday","mobile","email","nationality","idproof","idnumber","address"),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
 
         scroll_x.pack(side=BOTTOM,fill=X)
         scroll_y.pack(side=RIGHT,fill=Y)
@@ -168,10 +161,10 @@ class Cust_Win:
         scroll_y.config(command=self.Cust_Details_Table.yview)
 
         self.Cust_Details_Table.heading("ref",text="Refer No")
-        self.Cust_Details_Table.heading("firstname",text="FirstName")
-        self.Cust_Details_Table.heading("lastname",text="LastName")
+        self.Cust_Details_Table.heading("fname",text="First Name")
+        self.Cust_Details_Table.heading("lname",text="Last Name")
         self.Cust_Details_Table.heading("gender",text="Gender")
-        self.Cust_Details_Table.heading("post",text="PostCode")
+        self.Cust_Details_Table.heading("birthday",text="Birthday")
         self.Cust_Details_Table.heading("mobile",text="Mobile")
         self.Cust_Details_Table.heading("email",text="Email")
         self.Cust_Details_Table.heading("nationality",text="Nationality")
@@ -182,10 +175,10 @@ class Cust_Win:
         self.Cust_Details_Table["show"]="headings"
 
         self.Cust_Details_Table.column("ref",width=100)
-        self.Cust_Details_Table.column("firstname",width=100)
-        self.Cust_Details_Table.column("lastname",width=100)
+        self.Cust_Details_Table.column("fname",width=100)
+        self.Cust_Details_Table.column("lname",width=100)
         self.Cust_Details_Table.column("gender",width=100)
-        self.Cust_Details_Table.column("post",width=100)
+        self.Cust_Details_Table.column("birthday",width=100)
         self.Cust_Details_Table.column("mobile",width=100)
         self.Cust_Details_Table.column("email",width=100)
         self.Cust_Details_Table.column("nationality",width=100)
@@ -198,17 +191,17 @@ class Cust_Win:
         self.fetch_data()
 
     def add_data(self):
-        if self.var_cust_mobile.get()=="" or self.var_cust_lastname.get()=="":
+        if self.var_cust_mobile.get()=="" or self.var_last_name.get()=="":
             messagebox.showerror("Error","All fields are requaired",parent=self.root)
         else:
             try:
                 conn = mysql.connector.connect(host='localhost',user='root',password='',database='hotelmanagement')
                 my_cursor=conn.cursor()
                 my_cursor.execute("insert into customer values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",(self.var_cust_ref.get(),
-                                                                                                self.var_cust_firstname.get(),
-                                                                                                self.var_cust_lastname.get(),
+                                                                                                self.var_first_name.get(),
+                                                                                                self.var_last_name.get(),
                                                                                                 self.var_cust_gender.get(),
-                                                                                                self.var_cust_postcode.get(),
+                                                                                                self.var_cust_Birthday.get(),
                                                                                                 self.var_cust_mobile.get(),
                                                                                                 self.var_cust_email.get(),
                                                                                                 self.var_cust_nationality.get(),
@@ -241,10 +234,10 @@ class Cust_Win:
         row=content["values"]
 
         self.var_cust_ref.set(row[0]),
-        self.var_cust_firstname.set(row[1]),
-        self.var_cust_lastname.set(row[2]),
+        self.var_first_name.set(row[1]),
+        self.var_last_name.set(row[2]),
         self.var_cust_gender.set(row[3]),
-        self.var_cust_postcode.set(row[4]),
+        self.var_cust_Birthday.set(row[4]),
         self.var_cust_mobile.set(row[5]),
         self.var_cust_email.set(row[6]),
         self.var_cust_nationality.set(row[7]),
@@ -258,11 +251,11 @@ class Cust_Win:
         else:
             conn = mysql.connector.connect(host='localhost',user='root',password='',database='hotelmanagement')
             my_cursor=conn.cursor()
-            my_cursor.execute("update customer set Name=%s,Mother=%s,Gender=%s,PostCode=%s,Mobile=%s,Email=%s,Nationality=%s,Idproof=%s,Idnumber=%s,Address=%s where Ref=%s",(
-                                                                                                                                                                            self.var_cust_firstname.get(),
-                                                                                                                                                                            self.var_cust_lastname.get(),
+            my_cursor.execute("update customer set FirstName=%s,LastName=%s,Gender=%s,Birthday=%s,Mobile=%s,Email=%s,Nationality=%s,Idproof=%s,Idnumber=%s,Address=%s where Ref=%s",(
+                                                                                                                                                                            self.var_first_name.get(),
+                                                                                                                                                                            self.var_last_name.get(),
                                                                                                                                                                             self.var_cust_gender.get(),
-                                                                                                                                                                            self.var_cust_postcode.get(),
+                                                                                                                                                                            self.var_cust_Birthday.get(),
                                                                                                                                                                             self.var_cust_mobile.get(),
                                                                                                                                                                             self.var_cust_email.get(),
                                                                                                                                                                             self.var_cust_nationality.get(),
@@ -292,15 +285,11 @@ class Cust_Win:
         conn.close()
 
     def reset(self):
-        # self.var_cust_ref.set(""),
-        self.var_cust_firstname.set(""),
-        self.var_cust_lastname.set(""),
-        # self.var_cust_gender.set(""),
-        self.var_cust_postcode.set(""),
+        self.var_first_name.set(""),
+        self.var_last_name.set(""),
+        self.var_cust_Birthday.set(""),
         self.var_cust_mobile.set(""),
         self.var_cust_email.set(""),
-        # self.var_cust_nationality.set(""),
-        # self.var_cust_idproof.set(""),
         self.var_cust_idnumber.set(""),
         self.var_cust_address.set("")
 
